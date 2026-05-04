@@ -5,18 +5,160 @@
     <meta name="viewport" content="width=1920, height=1080" />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        margin: 0;
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background: #000;
+        background: #0c0c10;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+      }
+
+      /* ── Background video ── */
+      #bg-video {
+        position: absolute;
+        top: 0; left: 0;
+        width: 1920px;
+        height: 1080px;
+        object-fit: cover;
+      }
+
+      /* ── Dark cinematic overlay ── */
+      #overlay {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(12, 12, 16, 0.58);
+      }
+
+      /* ── Accent glow — margin-based centering avoids CSS transform conflict with GSAP ── */
+      #glow {
+        position: absolute;
+        top: 50%; left: 50%;
+        margin-top: -360px;
+        margin-left: -640px;
+        width: 1280px;
+        height: 720px;
+        background: radial-gradient(ellipse, rgba(230, 57, 70, 0.24) 0%, transparent 66%);
+      }
+
+      /* ── Ghost type decorative — bleeds off bottom-right ── */
+      #ghost-wrap {
+        position: absolute;
+        bottom: -80px; right: -60px;
+        pointer-events: none;
+        user-select: none;
+      }
+      #ghost {
+        font-family: 'Impact', 'Arial Black', sans-serif;
+        font-size: 480px;
+        font-weight: 900;
+        color: rgba(230, 57, 70, 0.07);
+        line-height: 1;
+        letter-spacing: -0.01em;
+      }
+
+      /* ── Film grain ── */
+      #grain {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        opacity: 0.04;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        background-size: 256px 256px;
+        pointer-events: none;
+      }
+
+      /* ── Main content ── */
+      #content-wrap {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+      }
+      .scene-content {
+        width: 100%; height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 80px 140px;
+        gap: 0;
+        box-sizing: border-box;
+      }
+
+      #rule-top {
+        width: 100%;
+        height: 2px;
+        background: #e63946;
+        margin-bottom: 52px;
+        transform-origin: left center;
+      }
+      #title {
+        font-family: 'Impact', 'Arial Black', sans-serif;
+        font-size: 272px;
+        font-weight: 900;
+        color: #f2efe9;
+        letter-spacing: 0.07em;
+        line-height: 1;
+        text-align: center;
+      }
+      #rule-bottom {
+        width: 100%;
+        height: 2px;
+        background: #e63946;
+        margin-top: 52px;
+        transform-origin: right center;
+      }
+      #tagline {
+        font-family: 'Helvetica Neue', 'Inter', sans-serif;
+        font-size: 28px;
+        font-weight: 300;
+        color: rgba(242, 239, 233, 0.5);
+        letter-spacing: 0.42em;
+        text-transform: uppercase;
+        margin-top: 40px;
+      }
+
+      /* ── Registration corners ── */
+      #corner-tl {
+        position: absolute;
+        top: 60px; left: 60px;
+        width: 52px; height: 52px;
+        border-top: 2px solid rgba(230, 57, 70, 0.55);
+        border-left: 2px solid rgba(230, 57, 70, 0.55);
+      }
+      #corner-br {
+        position: absolute;
+        bottom: 60px; right: 60px;
+        width: 52px; height: 52px;
+        border-bottom: 2px solid rgba(230, 57, 70, 0.55);
+        border-right: 2px solid rgba(230, 57, 70, 0.55);
+      }
+
+      /* ── Monospace metadata ── */
+      #meta {
+        position: absolute;
+        bottom: 72px; left: 140px;
+        font-family: 'Courier New', monospace;
+        font-size: 18px;
+        color: rgba(242, 239, 233, 0.28);
+        letter-spacing: 0.14em;
+      }
+
+      /* ── Fade-to-black overlay ── */
+      #fade-out {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: #0c0c10;
+        opacity: 0;
+        pointer-events: none;
       }
     </style>
   </head>
@@ -29,22 +171,141 @@
       data-width="1920"
       data-height="1080"
     >
-      
-      
+      <!-- Track 0: Background video (muted — audio via separate element) -->
+      <video
+        id="bg-video"
+        class="clip"
+        data-start="0"
+        data-duration="10"
+        data-track-index="0"
+        src="video.mp4"
+        muted
+        playsinline
+      ></video>
 
-      <!--
-        Add your clips here. Example:
-        <div id="title" class="clip" data-start="0" data-duration="5" data-track-index="1"
-             style="font-size: 64px; color: #fff; padding: 40px">
-          Hello World
+      <!-- Track 1: Background music -->
+      <audio
+        id="bg-audio"
+        class="clip"
+        data-start="0"
+        data-duration="10"
+        data-track-index="1"
+        src="music.mp3"
+        data-volume="0.75"
+      ></audio>
+
+      <!-- Track 2: Dark overlay -->
+      <div id="overlay" class="clip" data-start="0" data-duration="10" data-track-index="2"></div>
+
+      <!-- Track 3: Accent radial glow -->
+      <div id="glow" class="clip" data-start="0" data-duration="10" data-track-index="3"></div>
+
+      <!-- Track 4: Ghost type (wrapper handles opacity, child handles y drift) -->
+      <div id="ghost-wrap" class="clip" data-start="0" data-duration="10" data-track-index="4">
+        <div id="ghost">FY</div>
+      </div>
+
+      <!-- Track 5: Film grain -->
+      <div id="grain" class="clip" data-start="0" data-duration="10" data-track-index="5"></div>
+
+      <!-- Track 6: Main content -->
+      <div id="content-wrap" class="clip" data-start="0" data-duration="10" data-track-index="6">
+        <div class="scene-content">
+          <div id="rule-top"></div>
+          <div id="title">FUCK YOU</div>
+          <div id="rule-bottom"></div>
+          <div id="tagline">A Product Intro</div>
         </div>
-      -->
+        <div id="corner-tl"></div>
+        <div id="corner-br"></div>
+        <div id="meta">00:00:10 &nbsp;&middot;&nbsp; 1920&times;1080 &nbsp;&middot;&nbsp; 30FPS</div>
+      </div>
+
+      <!-- Track 7: Fade-to-black -->
+      <div id="fade-out" class="clip" data-start="0" data-duration="10" data-track-index="7"></div>
     </div>
 
     <script>
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
-      // Example: tl.from("#title", { opacity: 0, y: -50, duration: 1 }, 0);
+
+      // ── Overlay: fade in ──
+      tl.fromTo("#overlay",
+        { opacity: 0 },
+        { opacity: 1, duration: 1.6, ease: "power2.out" },
+        0.1
+      );
+
+      // ── Glow: entrance then breathe ──
+      // Entrance: t=0.2 → t=2.0. Breathe starts t=2.1.
+      // Breathe runs from 2.1 to 8.8 (6.7s), cycle=3s yoyo → repeat: ceil(6.7/3)-1 = 2
+      tl.fromTo("#glow",
+        { opacity: 0, scale: 0.8 },
+        { opacity: 1, scale: 1, duration: 1.8, ease: "power3.out" },
+        0.2
+      );
+      tl.to("#glow", { scale: 1.14, duration: 3, ease: "sine.inOut", repeat: 2, yoyo: true }, 2.1);
+
+      // ── Ghost type: opacity on wrapper (entrance), y drift on child (avoids stacked transforms) ──
+      tl.fromTo("#ghost-wrap",
+        { opacity: 0 },
+        { opacity: 1, duration: 2.2, ease: "power2.out" },
+        0.4
+      );
+      tl.fromTo("#ghost",
+        { y: 50 },
+        { y: -50, duration: 9.6, ease: "none" },
+        0.4
+      );
+
+      // ── Registration corners: pop in ──
+      tl.fromTo("#corner-tl",
+        { opacity: 0, scale: 0.5 },
+        { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out" },
+        0.9
+      );
+      tl.fromTo("#corner-br",
+        { opacity: 0, scale: 0.5 },
+        { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out" },
+        1.1
+      );
+
+      // ── Metadata ──
+      tl.fromTo("#meta",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.7, ease: "power2.out" },
+        1.3
+      );
+
+      // ── Rules: scaleX reveal ──
+      tl.fromTo("#rule-top",
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.85, ease: "expo.out" },
+        1.7
+      );
+      tl.fromTo("#rule-bottom",
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.65, ease: "power3.out" },
+        2.0
+      );
+
+      // ── Title "FUCK YOU": dramatic scale + opacity reveal ──
+      tl.fromTo("#title",
+        { opacity: 0, scale: 0.84 },
+        { opacity: 1, scale: 1, duration: 2.1, ease: "expo.out" },
+        2.3
+      );
+
+      // ── Tagline ──
+      tl.fromTo("#tagline",
+        { opacity: 0, y: 28 },
+        { opacity: 1, y: 0, duration: 1.1, ease: "power3.out" },
+        3.9
+      );
+
+      // ── Fade to black ──
+      tl.to("#fade-out", { opacity: 1, duration: 1.2, ease: "power2.in" }, 8.8);
+
       window.__timelines["main"] = tl;
     </script>
   </body>
