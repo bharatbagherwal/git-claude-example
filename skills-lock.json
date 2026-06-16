@@ -37,6 +37,12 @@
       "skillPath": "skills/hyperframes-registry/SKILL.md",
       "computedHash": "141fcd863a1a02117706712508e8b0df407c3d0ff36e5863123fa4ce2defd14d"
     },
+    "kling-3-prompting": {
+      "source": "aedev-tools/kling-3-prompting-skill",
+      "sourceType": "github",
+      "skillPath": "skills/kling-3-prompting/SKILL.md",
+      "computedHash": "cda5fb886860dcd53a6cd9326f48b58aa1ddb2653e51288ef8335fa09c9b078f"
+    },
     "lottie": {
       "source": "heygen-com/hyperframes",
       "sourceType": "github",
